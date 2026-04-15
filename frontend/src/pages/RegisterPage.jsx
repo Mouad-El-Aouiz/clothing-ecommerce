@@ -1,3 +1,4 @@
+// frontend/src/pages/RegisterPage.jsx
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { Link, useNavigate } from 'react-router-dom'
@@ -33,8 +34,15 @@ const RegisterPage = () => {
     
     try {
       await dispatch(register(formData)).unwrap()
-      toast.success('Inscription réussie! Vous pouvez maintenant vous connecter')
-      navigate('/login')
+      
+      // ✅ MESSAGE CORRIGÉ - Informer sur l'email de confirmation
+      toast.success(
+        'Inscription réussie ! Un email de confirmation vous a été envoyé. '
+      )
+      
+      // ✅ Rediriger vers la page de confirmation ou login
+      navigate('/login?registered=true')
+      
     } catch (error) {
       const errors = error.response?.data
       if (errors?.username) toast.error(errors.username[0])
@@ -129,6 +137,10 @@ const RegisterPage = () => {
             </button>
           </div>
         </form>
+        
+        <div className="text-center text-sm text-gray-500">
+          <p>En créant un compte, vous acceptez nos conditions générales.</p>
+        </div>
       </div>
     </div>
   )

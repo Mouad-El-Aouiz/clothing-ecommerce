@@ -1,18 +1,39 @@
-import React, { useState } from 'react'
-import { useDispatch } from 'react-redux'
-import { Link, useNavigate } from 'react-router-dom'
+// frontend/src/pages/LoginPage.jsx
+import React, { useState, useEffect } from 'react'
+import { useDispatch, useSelector } from 'react-redux'
+import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { login, fetchProfile } from '../store/slices/authSlice'
 import { fetchCart } from '../store/slices/cartSlice'
+import { fetchWishlist } from '../store/slices/wishlistSlice'
 import toast from 'react-hot-toast'
 
 const LoginPage = () => {
   const dispatch = useDispatch()
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const { isAuthenticated } = useSelector(state => state.auth)
+  
   const [formData, setFormData] = useState({
     username: '',
     password: '',
   })
   const [loading, setLoading] = useState(false)
+
+  // ✅ Afficher un message si l'utilisateur vient de s'inscrire
+  useEffect(() => {
+    if (searchParams.get('registered') === 'true') {
+      toast.success(
+        'Compte créé avec succès ! Un email de confirmation vous a été envoyé. '
+      )
+    }
+  }, [searchParams])
+
+  // Rediriger si déjà connecté
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate('/')
+    }
+  }, [isAuthenticated, navigate])
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value })
@@ -24,12 +45,16 @@ const LoginPage = () => {
     
     try {
       await dispatch(login(formData)).unwrap()
-      await dispatch(fetchProfile())
-      await dispatch(fetchCart())
-      toast.success('Connexion réussie!')
+      await Promise.all([
+        dispatch(fetchProfile()),
+        dispatch(fetchCart()),
+        dispatch(fetchWishlist())
+      ])
+      toast.success('Connexion réussie !')
       navigate('/')
     } catch (error) {
-      toast.error('Nom d\'utilisateur ou mot de passe incorrect')
+      const errorMsg = error.response?.data?.detail || 'Nom d\'utilisateur ou mot de passe incorrect'
+      toast.error(errorMsg)
     } finally {
       setLoading(false)
     }
@@ -61,6 +86,7 @@ const LoginPage = () => {
                 onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Nom d'utilisateur"
+                disabled={loading}
               />
             </div>
             <div>
@@ -72,6 +98,7 @@ const LoginPage = () => {
                 onChange={handleChange}
                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 focus:z-10 sm:text-sm"
                 placeholder="Mot de passe"
+                disabled={loading}
               />
             </div>
           </div>
@@ -100,14 +127,13 @@ const LoginPage = () => {
             <button
               type="submit"
               disabled={loading}
-              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50"
+              className="group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {loading ? 'Connexion...' : 'Se connecter'}
             </button>
           </div>
         </form>
         
-        {/* Demo credentials */}
         <div className="text-center text-sm text-gray-500">
           <p>Démo: demo / demo123</p>
         </div>

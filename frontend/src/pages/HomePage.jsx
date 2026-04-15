@@ -7,97 +7,75 @@ import { fetchFeatured, fetchNewArrivals, fetchCategories, fetchProducts } from 
 
 const HomePage = () => {
   const dispatch = useDispatch()
-  const { featured, newArrivals, categories } = useSelector(state => state.products)
+  const { featured, newArrivals, categories, products } = useSelector(state => state.products)
   const [currentHeroIndex, setCurrentHeroIndex] = useState(0)
-  const [heroImages, setHeroImages] = useState([])
-  const [popularCategories, setPopularCategories] = useState([])
+
+  // Images par défaut (Unsplash) - utilisées quand pas d'images en BDD
+  const defaultHeroImages = [
+    {
+      src: 'https://images.unsplash.com/photo-1550995694-3f5f4a7e1bd2?w=1200',
+      alt: 'Collection Homme',
+      link: '/shop/homme',
+      title: 'Collection Homme',
+      subtitle: 'Tendances automne/hiver 2024'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1483985988355-763728e1935b?w=1200',
+      alt: 'Collection Femme',
+      link: '/shop/femme',
+      title: 'Collection Femme',
+      subtitle: 'Élégance et confort au quotidien'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1445205170230-053b83016050?w=1200',
+      alt: 'Accessoires',
+      link: '/shop',
+      title: 'Accessoires',
+      subtitle: 'Le détail qui fait la différence'
+    },
+    {
+      src: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?w=1200',
+      alt: 'Sport & Loisirs',
+      link: '/shop',
+      title: 'Sport & Loisirs',
+      subtitle: 'Performance et style'
+    }
+  ]
+
+  // Essayer d'utiliser les images de la BDD, sinon images par défaut
+  const [heroImages, setHeroImages] = useState(defaultHeroImages)
+  const [popularCategories, setPopularCategories] = useState([
+    { name: 'Vêtements Homme', link: '/shop/homme', image: defaultHeroImages[0].src, color: 'from-indigo-900/80' },
+    { name: 'Vêtements Femme', link: '/shop/femme', image: defaultHeroImages[1].src, color: 'from-pink-900/80' }
+  ])
 
   useEffect(() => {
     dispatch(fetchFeatured())
     dispatch(fetchNewArrivals())
     dispatch(fetchCategories())
+    dispatch(fetchProducts({}))
   }, [dispatch])
 
-  // Construire les images hero et catégories UNIQUEMENT avec les images de la BDD
+  // Mettre à jour avec les images de la BDD si disponibles
   useEffect(() => {
     if (categories && categories.length > 0) {
-      // 🔧 RECHERCHE PAR ID (plus fiable que par nom)
-      const menCategory = categories.find(cat => cat.id === 48)  // Vêtements Homme
-      const womenCategory = categories.find(cat => cat.id === 2)  // Vêtements Femme
-      const accessoriesCategory = categories.find(cat => cat.id === 3)  // ACCESSOIRES
-      const sportCategory = categories.find(cat => cat.id === 4)  // Sport & Loisirs
+      const menCategory = categories.find(cat => cat.id === 48)
+      const womenCategory = categories.find(cat => cat.id === 2)
+      const accessoriesCategory = categories.find(cat => cat.id === 3)
+      const sportCategory = categories.find(cat => cat.id === 4)
 
-      console.log('👨 Catégorie Homme (ID 48):', menCategory?.name, 'Image:', !!menCategory?.image)
-      console.log('👩 Catégorie Femme (ID 2):', womenCategory?.name, 'Image:', !!womenCategory?.image)
-      console.log('👜 Accessoires (ID 3):', accessoriesCategory?.name, 'Image:', !!accessoriesCategory?.image)
-      console.log('⚽ Sport (ID 4):', sportCategory?.name, 'Image:', !!sportCategory?.image)
-
-      // 1. Récupérer les images des catégories pour le carrousel
-      const newHeroImages = []
+      const newHeroImages = [...defaultHeroImages]
       
-      if (menCategory?.image) {
-        newHeroImages.push({
-          src: menCategory.image,
-          alt: 'Collection Homme',
-          link: '/shop/homme',
-          title: 'Collection Homme',
-          subtitle: 'Tendances automne/hiver 2024'
-        })
-      }
+      if (menCategory?.image) newHeroImages[0] = { ...newHeroImages[0], src: menCategory.image }
+      if (womenCategory?.image) newHeroImages[1] = { ...newHeroImages[1], src: womenCategory.image }
+      if (accessoriesCategory?.image) newHeroImages[2] = { ...newHeroImages[2], src: accessoriesCategory.image }
+      if (sportCategory?.image) newHeroImages[3] = { ...newHeroImages[3], src: sportCategory.image }
       
-      if (womenCategory?.image) {
-        newHeroImages.push({
-          src: womenCategory.image,
-          alt: 'Collection Femme',
-          link: '/shop/femme',
-          title: 'Collection Femme',
-          subtitle: 'Élégance et confort au quotidien'
-        })
-      }
-      
-      if (accessoriesCategory?.image) {
-        newHeroImages.push({
-          src: accessoriesCategory.image,
-          alt: 'Accessoires',
-          link: '/shop',
-          title: 'Accessoires',
-          subtitle: 'Le détail qui fait la différence'
-        })
-      }
-      
-      if (sportCategory?.image) {
-        newHeroImages.push({
-          src: sportCategory.image,
-          alt: 'Sport & Loisirs',
-          link: '/shop',
-          title: 'Sport & Loisirs',
-          subtitle: 'Performance et style'
-        })
-      }
-      
-      console.log('🎠 Images hero construites:', newHeroImages.length)
       setHeroImages(newHeroImages)
 
-      // 2. Récupérer les images pour les catégories populaires
-      const newPopularCategories = []
-      
-      if (menCategory?.image) {
-        newPopularCategories.push({
-          name: 'Vêtements Homme',
-          link: '/shop/homme',
-          image: menCategory.image,
-          color: 'from-indigo-900/80'
-        })
-      }
-      
-      if (womenCategory?.image) {
-        newPopularCategories.push({
-          name: 'Vêtements Femme',
-          link: '/shop/femme',
-          image: womenCategory.image,
-          color: 'from-pink-900/80'
-        })
-      }
+      const newPopularCategories = [...popularCategories]
+      if (menCategory?.image) newPopularCategories[0] = { ...newPopularCategories[0], image: menCategory.image }
+      if (womenCategory?.image) newPopularCategories[1] = { ...newPopularCategories[1], image: womenCategory.image }
       
       setPopularCategories(newPopularCategories)
     }
@@ -111,18 +89,6 @@ const HomePage = () => {
     }, 5000)
     return () => clearInterval(interval)
   }, [heroImages.length])
-
-  // Si pas d'images, ne rien afficher
-  if (heroImages.length === 0) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto"></div>
-          <p className="mt-4 text-gray-600">Chargement des images...</p>
-        </div>
-      </div>
-    )
-  }
 
   const currentHero = heroImages[currentHeroIndex]
 
@@ -153,7 +119,6 @@ const HomePage = () => {
           <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/30 to-transparent" />
         </div>
 
-        {/* Indicateurs de slide */}
         <div className="absolute bottom-8 left-0 right-0 z-20 flex justify-center gap-3">
           {heroImages.map((_, index) => (
             <button
@@ -168,7 +133,6 @@ const HomePage = () => {
           ))}
         </div>
 
-        {/* Contenu Hero */}
         <div className="relative z-10 h-full flex items-center">
           <div className="container mx-auto px-4 md:px-8">
             <motion.div
@@ -203,61 +167,59 @@ const HomePage = () => {
       </section>
 
       {/* ==================== CATÉGORIES POPULAIRES ==================== */}
-      {popularCategories.length > 0 && (
-        <section className="py-20 px-4 bg-white">
-          <div className="container mx-auto max-w-6xl">
-            <motion.div
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              variants={fadeUp}
-              transition={{ duration: 0.5 }}
-              className="text-center mb-12"
-            >
-              <span className="text-indigo-600 text-sm uppercase tracking-wider font-semibold">Nos collections</span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Découvrez nos univers</h2>
-              <div className="w-20 h-1 bg-indigo-600 mx-auto mt-4 rounded-full" />
-            </motion.div>
+      <section className="py-20 px-4 bg-white">
+        <div className="container mx-auto max-w-6xl">
+          <motion.div
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            variants={fadeUp}
+            transition={{ duration: 0.5 }}
+            className="text-center mb-12"
+          >
+            <span className="text-indigo-600 text-sm uppercase tracking-wider font-semibold">Nos collections</span>
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mt-2">Découvrez nos univers</h2>
+            <div className="w-20 h-1 bg-indigo-600 mx-auto mt-4 rounded-full" />
+          </motion.div>
 
-            <motion.div
-              variants={staggerContainer}
-              initial="hidden"
-              whileInView="visible"
-              viewport={{ once: true, amount: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-2 gap-8"
-            >
-              {popularCategories.map((category, index) => (
-                <motion.div
-                  key={category.name}
-                  variants={fadeUp}
-                  transition={{ duration: 0.5, delay: index * 0.1 }}
-                  className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
-                >
-                  <Link to={category.link}>
-                    <div className="relative h-96 overflow-hidden">
-                      <img
-                        src={category.image}
-                        alt={category.name}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                      />
-                      <div className={`absolute inset-0 bg-gradient-to-t ${category.color} to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300`} />
-                      <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                        <h3 className="text-2xl md:text-3xl font-bold mb-2">{category.name}</h3>
-                        <span className="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all">
-                          Découvrir
-                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                          </svg>
-                        </span>
-                      </div>
+          <motion.div
+            variants={staggerContainer}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, amount: 0.3 }}
+            className="grid grid-cols-1 md:grid-cols-2 gap-8"
+          >
+            {popularCategories.map((category, index) => (
+              <motion.div
+                key={category.name}
+                variants={fadeUp}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                className="group relative overflow-hidden rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-500"
+              >
+                <Link to={category.link}>
+                  <div className="relative h-96 overflow-hidden">
+                    <img
+                      src={category.image}
+                      alt={category.name}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                    />
+                    <div className={`absolute inset-0 bg-gradient-to-t ${category.color} to-transparent opacity-70 group-hover:opacity-80 transition-opacity duration-300`} />
+                    <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                      <h3 className="text-2xl md:text-3xl font-bold mb-2">{category.name}</h3>
+                      <span className="inline-flex items-center gap-1 text-sm font-medium group-hover:gap-2 transition-all">
+                        Découvrir
+                        <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </span>
                     </div>
-                  </Link>
-                </motion.div>
-              ))}
-            </motion.div>
-          </div>
-        </section>
-      )}
+                  </div>
+                </Link>
+              </motion.div>
+            ))}
+          </motion.div>
+        </div>
+      </section>
 
       {/* ==================== PRODUITS VEDETTES ==================== */}
       <section className="py-20 px-4 bg-gray-50">
