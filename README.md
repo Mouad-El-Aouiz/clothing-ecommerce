@@ -58,156 +58,6 @@ Créer une expérience d'achat en ligne fluide, intuitive et sécurisée pour le
 
 ---
 
-## 🛠️ Administration - Gestion des produits et catégories
-
-L'interface d'administration Django permet de gérer facilement toutes les données du site.
-
-### 🔑 Accéder à l'administration
-
-1. Assurez-vous que le serveur backend est démarré :
-```bash
-cd backend
-python manage.py runserver
-```
-2. Ouvrez votre navigateur à l'adresse : http://localhost:8000/admin
-
-3. Connectez-vous avec vos identifiants superutilisateur :
-  - admin / admin123 (compte de démonstration)
-
-### 📁 Gérer les catégories
-
-#### Créer une catégorie parente
-
-1. Dans l'admin, cliquez sur "Categories" (section Products)
-
-2. Cliquez sur "AJOUTER CATÉGORIE" (en haut à droite)
-
-3. Remplissez les champs :
-
-    | Champ | Exemple | Description |
-    |-------|---------|-------------|
-    | Name | Vêtements Homme | Nom affiché sur le site |
-    | Slug | vetements-homme | Généré automatiquement (version URL) |
-    | Gender | Homme | Filtre pour l'affichage |
-    | Parent | (laisser vide) | Pour les sous-catégories |
-    | Image | (choisir un fichier) | Image de la catégorie |
-    | Is active | ✅ coché | Visible sur le site |
-
-4. Cliquez sur "SAUVEGARDER"
-
-#### Créer une sous-catégorie 
-
-1. Suivez les mêmes étapes
-
-2. Sélectionnez une catégorie parente dans le menu déroulant
-
-3. Exemple : T-shirts Homme (parent = Vêtements Homme)
-
-### 📁 Gérer les produits
-
-#### Créer un produit
-
-1. Dans l'admin, cliquez sur "Products" (section Products)
-
-2. Cliquez sur "AJOUTER PRODUIT"
-
-3. Remplissez les informations :
-
-    | Champ | Exemple | Description |
-    |-------|---------|-------------|
-    | Name | T-Shirt Classic Noir | Nom du produit |
-    | Slug | t-shirt-classic-noir | Généré automatiquement |
-    | Category | T-shirts Homme | Sélectionnez une sous-catégorie |
-    | Gender | Homme | Public cible |
-    | Description | T-shirt en coton biologique... | Description détaillée |
-    | Price | 299.00 | Prix en MAD |
-    | Discount price | 199.00 | Prix promo (optionnel) |
-    | Stock | 50 | Quantité totale |
-    | Is active | ✅ coché | Visible sur le site |
-    | Is featured | ✅ coché | Apparaît dans "Produits vedettes" |
-
-4. Cliquez sur "SAUVEGARDER"
-
-#### Ajouter des images au produit
-
-1. Après avoir créé le produit, descendez jusqu'à la section "Product images"
-
-2. Cliquez sur "Ajouter une autre Product image"
-
-3. Choisissez un fichier image
-
-4. Cochez "Is primary" pour l'image principale
-
-5. Cliquez sur "SAUVEGARDER"
-
-#### Ajouter des variantes (tailles / couleurs)
-
-1. Descendez jusqu'à la section "Product variants"
-
-2. Cliquez sur "Ajouter une autre Product variant"
-
-3. Remplissez :
-
-    | Champ | Exemple | 
-    |-------|---------|
-    | Size | M | 
-    | Color | Black | 
-    | SKU | TSH-BLK-M (code unique) | 
-    | Stock | 15 | 
-    | Price adjustment | 0(supplément pour cette taille) | 
-
-4. Répétez pour chaque taille/couleur (S, M, L, XL)
-
-5. Cliquez sur "SAUVEGARDER"
-
-### 🖼️ Gérer les images Cloudinary
-
-Avec Cloudinary, les images sont automatiquement uploadées et optimisées :
-
- - Format automatique (WebP pour les navigateurs compatibles)
-
- - Compression sans perte de qualité
-
- - Délivrée via CDN pour un chargement rapide
-
-
-### 🔄 Mettre à jour le stock
-
-1. Allez dans "Products" → sélectionnez un produit
-
-2. Modifiez le champ "Stock"
-
-3. Ou modifiez les stocks individuels dans "Product variants"
-
-4. Cliquez sur "SAUVEGARDER"
-
-### 📈 Voir les commandes
-
-1. Allez dans "Orders" (section Orders)
-
-2. Vous pouvez :
-
-   - Voir toutes les commandes
-
-   - Filtrer par statut (PENDING, SHIPPED, DELIVERED...)
-
-   - Changer le statut d'une commande
-
-   - Voir les détails de chaque commande
-
-### 🗑️ Supprimer un produit
-
-1. Cochez la case à côté du produit
-
-2. Dans le menu déroulant "Actions", sélectionnez "Supprimer"
-
-3. Confirmez la suppression
-
-  - ⚠️ Attention : La suppression est définitive. Les images sur Cloudinary ne sont pas automatiquement supprimées.
-
-
----
-
 
 ## 🏗️ Architecture technique
 
@@ -378,6 +228,155 @@ Le frontend sera accessible sur http://localhost:5173.
 - Les paiements sont simulés sans frais réels.
 
 - Webhook Stripe optionnel pour la confirmation automatique.
+
+---
+
+## 🛠️ Administration - Gestion des produits et catégories
+
+L'interface d'administration Django permet de gérer facilement toutes les données du site.
+
+### 🔑 Accéder à l'administration
+
+1. Assurez-vous que le serveur backend est démarré :
+```bash
+cd backend
+python manage.py runserver
+```
+2. Ouvrez votre navigateur à l'adresse : http://localhost:8000/admin
+
+3. Connectez-vous avec vos identifiants superutilisateur :
+  - admin / admin123 (compte de démonstration)
+
+### 📁 Gérer les catégories
+
+#### Créer une catégorie parente
+
+1. Dans l'admin, cliquez sur "Categories" (section Products)
+
+2. Cliquez sur "AJOUTER CATÉGORIE" (en haut à droite)
+
+3. Remplissez les champs :
+
+    | Champ | Exemple | Description |
+    |-------|---------|-------------|
+    | Name | Vêtements Homme | Nom affiché sur le site |
+    | Slug | vetements-homme | Généré automatiquement (version URL) |
+    | Gender | Homme | Filtre pour l'affichage |
+    | Parent | (laisser vide) | Pour les sous-catégories |
+    | Image | (choisir un fichier) | Image de la catégorie |
+    | Is active | ✅ coché | Visible sur le site |
+
+4. Cliquez sur "SAUVEGARDER"
+
+#### Créer une sous-catégorie 
+
+1. Suivez les mêmes étapes
+
+2. Sélectionnez une catégorie parente dans le menu déroulant
+
+3. Exemple : T-shirts Homme (parent = Vêtements Homme)
+
+### 📁 Gérer les produits
+
+#### Créer un produit
+
+1. Dans l'admin, cliquez sur "Products" (section Products)
+
+2. Cliquez sur "AJOUTER PRODUIT"
+
+3. Remplissez les informations :
+
+    | Champ | Exemple | Description |
+    |-------|---------|-------------|
+    | Name | T-Shirt Classic Noir | Nom du produit |
+    | Slug | t-shirt-classic-noir | Généré automatiquement |
+    | Category | T-shirts Homme | Sélectionnez une sous-catégorie |
+    | Gender | Homme | Public cible |
+    | Description | T-shirt en coton biologique... | Description détaillée |
+    | Price | 299.00 | Prix en MAD |
+    | Discount price | 199.00 | Prix promo (optionnel) |
+    | Stock | 50 | Quantité totale |
+    | Is active | ✅ coché | Visible sur le site |
+    | Is featured | ✅ coché | Apparaît dans "Produits vedettes" |
+
+4. Cliquez sur "SAUVEGARDER"
+
+#### Ajouter des images au produit
+
+1. Après avoir créé le produit, descendez jusqu'à la section "Product images"
+
+2. Cliquez sur "Ajouter une autre Product image"
+
+3. Choisissez un fichier image
+
+4. Cochez "Is primary" pour l'image principale
+
+5. Cliquez sur "SAUVEGARDER"
+
+#### Ajouter des variantes (tailles / couleurs)
+
+1. Descendez jusqu'à la section "Product variants"
+
+2. Cliquez sur "Ajouter une autre Product variant"
+
+3. Remplissez :
+
+    | Champ | Exemple | 
+    |-------|---------|
+    | Size | M | 
+    | Color | Black | 
+    | SKU | TSH-BLK-M (code unique) | 
+    | Stock | 15 | 
+    | Price adjustment | 0(supplément pour cette taille) | 
+
+4. Répétez pour chaque taille/couleur (S, M, L, XL)
+
+5. Cliquez sur "SAUVEGARDER"
+
+### 🖼️ Gérer les images Cloudinary
+
+Avec Cloudinary, les images sont automatiquement uploadées et optimisées :
+
+ - Format automatique (WebP pour les navigateurs compatibles)
+
+ - Compression sans perte de qualité
+
+ - Délivrée via CDN pour un chargement rapide
+
+
+### 🔄 Mettre à jour le stock
+
+1. Allez dans "Products" → sélectionnez un produit
+
+2. Modifiez le champ "Stock"
+
+3. Ou modifiez les stocks individuels dans "Product variants"
+
+4. Cliquez sur "SAUVEGARDER"
+
+### 📈 Voir les commandes
+
+1. Allez dans "Orders" (section Orders)
+
+2. Vous pouvez :
+
+   - Voir toutes les commandes
+
+   - Filtrer par statut (PENDING, SHIPPED, DELIVERED...)
+
+   - Changer le statut d'une commande
+
+   - Voir les détails de chaque commande
+
+### 🗑️ Supprimer un produit
+
+1. Cochez la case à côté du produit
+
+2. Dans le menu déroulant "Actions", sélectionnez "Supprimer"
+
+3. Confirmez la suppression
+
+  - ⚠️ Attention : La suppression est définitive. Les images sur Cloudinary ne sont pas automatiquement supprimées.
 
 ---
 
